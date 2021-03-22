@@ -22,13 +22,13 @@ class CreateSessionsService {
     const user = await usersRepository.findByEmail(email)
 
     if (!user) {
-      throw new AppError('Incorrect email/password combination.', 401)
+      throw new AppError('Atenção: email e/ou senha estão incorretos.', 401)
     }
 
     const passwordConfirmed = await compare(password, user.password)
 
     if (!passwordConfirmed) {
-      throw new AppError('Incorrect email/password combination.', 401)
+      throw new AppError('Atenção: email e/ou senha estão incorretos.', 401)
     }
 
     const token = sign({}, authConfig.jwt.secret, {

@@ -1,12 +1,12 @@
 import { Router } from 'express'
 import { celebrate, Joi, Segments } from 'celebrate'
 import UsersController from '../controllers/UsersController'
-import isAuthenticated from '@server/middlewares/isAuthenticated'
+// import isAuthenticated from '@server/middlewares/isAuthenticated'
 
 const usersRouter = Router()
 const usersController = new UsersController()
 
-usersRouter.get('/', isAuthenticated, usersController.index)
+usersRouter.get('/', usersController.index)
 
 usersRouter.post(
   '/',
@@ -18,6 +18,16 @@ usersRouter.post(
     },
   }),
   usersController.create,
+)
+
+usersRouter.delete(
+  '/:id',
+  celebrate({
+    [Segments.PARAMS]: {
+      id: Joi.string().uuid().required(),
+    },
+  }),
+  usersController.delete,
 )
 
 export default usersRouter

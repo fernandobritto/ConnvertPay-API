@@ -17,7 +17,7 @@ export default function isAuthenticated(
   const authHeader = request.headers.authorization
 
   if (!authHeader) {
-    throw new AppError('JWT Token is missing.')
+    throw new AppError('Token JWT não encontrado')
   }
 
   const [, token] = authHeader.split(' ')
@@ -33,6 +33,6 @@ export default function isAuthenticated(
 
     return next()
   } catch {
-    throw new AppError('Invalid JWT Token.')
+    throw new AppError('Token JWT inválido')
   }
 }
