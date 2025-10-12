@@ -1,15 +1,15 @@
-import { DateProvider } from '../infra/providers/date/date.provider'
+import { DateProvider } from 'src/adapters/outbound/providers/date/date.provider'
 import type { ArgumentsHost, ExceptionFilter } from '@nestjs/common'
 import { Catch, HttpException, HttpStatus, Logger } from '@nestjs/common'
 import { APP_FILTER, HttpAdapterHost } from '@nestjs/core'
 import type { Observable } from 'rxjs'
 
-import { BaseError } from '../domain/errors/base-error'
+import { BaseError } from 'src/common/errors/base-error'
 import {
   IntegrationExternalServiceError,
   IntegrationServiceUnauthorizedError,
   ProviderInternalValidationError
-} from '../domain/errors/integrations-errors'
+} from 'src/common/errors/integrations-errors'
 import {
   ServiceAlreadyExistsError,
   ServiceInternalServerError,
@@ -19,7 +19,7 @@ import {
   ServiceTimeoutError,
   ServiceUnImplementedError,
   ServiceUnauthorizedError
-} from '../domain/errors/services-errors'
+} from 'src/common/errors/services-errors'
 
 @Catch()
 export class ExceptionHandler implements ExceptionFilter {

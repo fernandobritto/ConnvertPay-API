@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { IJWTProvider } from 'src/domain/infra/providers/jwt/jwt.interface'
+import { IJWTProvider } from 'src/ports/outbound/providers/jwt/jwt.interface'
 import * as jsonwebtoken from 'jsonwebtoken'
 
 @Injectable()

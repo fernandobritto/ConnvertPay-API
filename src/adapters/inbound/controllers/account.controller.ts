@@ -10,8 +10,8 @@ import {
   Get
 } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
-import { AccountService } from './account.service'
-import { AccountDto } from 'src/domain/dtos/account.dto'
+import { AccountService } from 'src/domain/account/account.service'
+import { AccountDto } from 'src/ports/inbound/dtos/account.dto'
 
 @ApiTags('Account')
 @Controller('account')

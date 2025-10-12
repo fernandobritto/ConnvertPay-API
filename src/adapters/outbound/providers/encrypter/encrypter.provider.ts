@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { IEncrypterProvider } from 'src/domain/infra/providers/encrypter/encrypter.interface'
+import { IEncrypterProvider } from 'src/ports/outbound/providers/encrypter/encrypter.interface'
 import * as bcrypt from 'bcrypt'
 import crypto from 'crypto'
 

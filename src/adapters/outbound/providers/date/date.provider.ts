@@ -14,7 +14,7 @@ import {
   subMonths
 } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { IDateProvider } from 'src/domain/infra/providers/date/date.interface'
+import { IDateProvider } from 'src/ports/outbound/providers/date/date.interface'
 
 @Injectable()
 export class DateProvider implements IDateProvider {

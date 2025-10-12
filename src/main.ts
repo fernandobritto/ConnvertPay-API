@@ -4,7 +4,7 @@ import { AppModule } from './app.module'
 import { json, urlencoded } from 'express'
 import { ValidationPipe, VersioningType } from '@nestjs/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import { API_PREFIX } from 'src/domain/utils/constants'
+import { API_PREFIX } from 'src/common/helpers/constants'
 import { ConfigService } from '@nestjs/config'
 
 async function bootstrap() {

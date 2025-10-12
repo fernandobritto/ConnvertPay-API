@@ -1,6 +1,6 @@
 # ConnvertPay API
 
-> ### Esta é uma API Rest desenvolvida em Nodejs para controle e registro de dividas de clientes.
+> ### Esta é uma API Rest desenvolvida em Nodejs para controle e registro contábil de clientes.
 
 &nbsp;&nbsp;&nbsp;
 
@@ -10,7 +10,7 @@ Principais ferramentas utilizadas neste projeto:
 
 - [Typescript][typescript]
 - [Node.js][nodejs]
-- [NestJS][express]
+- [NestJS][nestjs]
 - [PostgreSQL][postgresql]
 - [TypeORM][typeorm]
 - [ESLint][eslint]
@@ -18,7 +18,7 @@ Principais ferramentas utilizadas neste projeto:
 
 [typescript]: https://www.typescriptlang.org/
 [nodejs]: https://nodejs.org/
-[express]: https://expressjs.com/pt-br/
+[nestjs]: https://nestjs.com/
 [postgresql]: https://www.postgresql.org/
 [typeorm]: https://typeorm.io
 [eslint]: https://eslint.org/
