@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { JwtProvider } from './jwt.provider'
-import { JWT_PROVIDER } from 'src/domain/infra/providers/jwt/jwt.interface'
+import { JWT_PROVIDER } from 'src/ports/outbound/providers/jwt/jwt.interface'
 
 @Module({
   exports: [JWT_PROVIDER],

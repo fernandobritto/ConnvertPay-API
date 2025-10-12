@@ -1,12 +1,12 @@
 import { Module, MiddlewareConsumer } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { TypeOrmModuleFactory } from './infra/database/typeorm-module-factory'
-import { LoggerMiddleware } from './middlewares/logger.middleware'
-import { DateModule } from './infra/providers/date/date.module'
-import { UtilsProviderModule } from './infra/providers/utils/utils.module'
-import { exceptionHandlerProvider } from './middlewares/exception-filter.middleware'
-import { AccountModule } from './app/account/account.module'
+import { TypeOrmModuleFactory } from './adapters/outbound/database/typeorm-module-factory'
+import { LoggerMiddleware } from './adapters/inbound/middlewares/logger.middleware'
+import { DateModule } from './adapters/outbound/providers/date/date.module'
+import { UtilsProviderModule } from './adapters/outbound/providers/utils/utils.module'
+import { exceptionHandlerProvider } from './adapters/inbound/middlewares/exception-filter.middleware'
+import { AccountModule } from './domain/account/account.module'
 
 @Module({
   imports: [

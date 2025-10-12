@@ -1,4 +1,4 @@
-import { AccountEntity } from '../../entities/account.entity'
+import { AccountEntity } from 'src/domain/entities/account.entity'
 
 export interface IAccountRepository {
   createAccount: (

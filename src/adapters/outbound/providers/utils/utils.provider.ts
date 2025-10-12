@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { IUtilsProvider } from 'src/domain/infra/providers/utils/utils.interface'
+import { IUtilsProvider } from 'src/ports/outbound/providers/utils/utils.interface'
 import { v4 } from 'uuid'
 
 @Injectable()

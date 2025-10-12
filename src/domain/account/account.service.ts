@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common'
 import {
   IAccountRepository,
   ACCOUNT_REPOSITORY
-} from 'src/domain/infra/repositories/account/account.interface'
-import { AccountDto } from 'src/domain/dtos/account.dto'
+} from 'src/ports/outbound/repositories/account/account.interface'
+import { AccountDto } from 'src/ports/inbound/dtos/account.dto'
 
 @Injectable()
 export class AccountService {

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { EncrypterProvider } from './encrypter.provider'
-import { ENCRYPTER_PROVIDER } from 'src/domain/infra/providers/encrypter/encrypter.interface'
+import { ENCRYPTER_PROVIDER } from 'src/ports/outbound/providers/encrypter/encrypter.interface'
 
 @Module({
   exports: [ENCRYPTER_PROVIDER],
