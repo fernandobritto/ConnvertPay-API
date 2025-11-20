@@ -11,15 +11,171 @@ module.exports = {
     reporterOptions: {
       dot: {
         collapsePattern: 'node_modules/[^/]+'
+      },
+      text: {
+        highlightFocused: true
       }
+    },
+    exclude: {
+      path: [
+        'node_modules',
+        '\\.spec\\.ts$',
+        '\\.test\\.ts$',
+        'dist',
+        'coverage'
+      ]
     }
   },
 
   forbidden: [
+    // === ARQUITETURA HEXAGONAL RULES ===
     {
-      name: 'no-orphans',
+      name: 'domain-isolation',
       comment:
-        'There should be no modules that are exported but not utilized (orphans)',
+        'Domain layer must remain isolated - no dependencies on adapters or external concerns',
+      severity: 'error',
+      from: {
+        path: '^src/domain'
+      },
+      to: {
+        path: '^src/(adapters|common/(?!errors|types))',
+        pathNot: '^src/(ports|domain)'
+      }
+    },
+
+    {
+      name: 'domain-entities-pure',
+      comment: 'Domain entities should only depend on other domain concepts',
+      severity: 'error',
+      from: {
+        path: '^src/domain/entities'
+      },
+      to: {
+        pathNot: '^(src/domain|src/ports|src/common/(errors|types))'
+      }
+    },
+
+    {
+      name: 'ports-interface-only',
+      comment:
+        'Ports should only contain interfaces and DTOs, no implementations',
+      severity: 'error',
+      from: {
+        path: '^src/ports'
+      },
+      to: {
+        pathNot: '^(src/ports|src/common/(errors|types)|src/domain/entities)'
+      }
+    },
+
+    {
+      name: 'inbound-adapters-dependencies',
+      comment:
+        'Inbound adapters can only depend on ports, domain services, and common utilities',
+      severity: 'error',
+      from: {
+        path: '^src/adapters/inbound'
+      },
+      to: {
+        pathNot: '^(src/ports|src/domain|src/common|src/adapters/inbound)'
+      }
+    },
+
+    {
+      name: 'outbound-adapters-dependencies',
+      comment:
+        'Outbound adapters can only depend on their own ports and common utilities',
+      severity: 'error',
+      from: {
+        path: '^src/adapters/outbound'
+      },
+      to: {
+        pathNot:
+          '^(src/ports/outbound|src/domain/entities|src/common|src/adapters/outbound)'
+      }
+    },
+
+    {
+      name: 'controllers-layer-separation',
+      comment:
+        'Controllers should not directly access repositories or external providers',
+      severity: 'error',
+      from: {
+        path: '^src/adapters/inbound/controllers'
+      },
+      to: {
+        path: '^src/adapters/outbound/(repositories|providers)'
+      }
+    },
+
+    {
+      name: 'repositories-implementation-isolation',
+      comment:
+        'Repository implementations should not depend on other repositories directly',
+      severity: 'warn',
+      from: {
+        path: '^src/adapters/outbound/repositories/[^/]+/[^/]+\\.repository\\.ts$'
+      },
+      to: {
+        path: '^src/adapters/outbound/repositories/(?![^/]+/[^/]+\\.(interface|module)\\.ts$)'
+      }
+    },
+
+    {
+      name: 'providers-encapsulation',
+      comment:
+        'Provider implementations should not cross-reference each other directly',
+      severity: 'warn',
+      from: {
+        path: '^src/adapters/outbound/providers/[^/]+/[^/]+\\.provider\\.ts$'
+      },
+      to: {
+        path: '^src/adapters/outbound/providers/(?![^/]+/[^/]+\\.(interface|module)\\.ts$)'
+      }
+    },
+
+    // === DEPENDENCY FLOW VALIDATION ===
+    {
+      name: 'no-reverse-dependencies',
+      comment:
+        'Prevent reverse dependencies - outer layers depending on inner layers inappropriately',
+      severity: 'error',
+      from: {
+        path: '^src/adapters/outbound'
+      },
+      to: {
+        path: '^src/adapters/inbound'
+      }
+    },
+
+    {
+      name: 'database-layer-isolation',
+      comment:
+        'Database layer should not be accessed directly by controllers or services',
+      severity: 'error',
+      from: {
+        path: '^src/(adapters/inbound|domain)'
+      },
+      to: {
+        path: '^src/adapters/outbound/database'
+      }
+    },
+
+    // === GENERAL CLEAN ARCHITECTURE RULES ===
+    {
+      name: 'no-circular-dependencies',
+      comment:
+        'Circular dependencies create tight coupling and should be avoided',
+      severity: 'error',
+      from: {},
+      to: {
+        circular: true
+      }
+    },
+
+    {
+      name: 'no-orphaned-modules',
+      comment: 'Avoid modules that are not used anywhere (orphans)',
       severity: 'warn',
       from: {
         orphan: true,
@@ -27,17 +183,20 @@ module.exports = {
           'node_modules',
           '\\.spec\\.ts$',
           '\\.test\\.ts$',
-          'src/app/utils',
-          'src/@types'
+          'src/main\\.ts$',
+          'src/app\\.module\\.ts$',
+          'src/adapters/outbound/database/migrations',
+          'src/adapters/outbound/database/seeding',
+          'src/common/types/\\.keep$',
+          'src/adapters/inbound/interceptors/\\.keep$'
         ]
       },
-      to: {
-        pathNot: '^node_modules'
-      }
+      to: {}
     },
+
     {
       name: 'no-deprecated-core',
-      comment: 'Avoid using deprecated core Node.js modules',
+      comment: 'Avoid deprecated Node.js core modules',
       severity: 'warn',
       from: {},
       to: {
@@ -45,75 +204,64 @@ module.exports = {
         path: '^(punycode|domain|constants|sys|_linklist|_stream_wrap)'
       }
     },
+
+    // === MODULE ORGANIZATION RULES ===
     {
-      name: 'no-circular-dependencies',
+      name: 'module-cohesion',
       comment:
-        'Avoid circular dependencies to prevent tight coupling between modules.',
-      severity: 'warn',
-      from: {},
+        'Modules should maintain cohesion - related functionality should be grouped',
+      severity: 'info',
+      from: {
+        path: '^src/domain/[^/]+/'
+      },
       to: {
-        circular: true
+        path: '^src/domain/(?![^/]+/)',
+        pathNot: '^src/(ports|common)'
       }
     },
+
     {
-      name: 'domain-no-deps',
-      comment:
-        'The domain layer should not depend on any other layers (application, infrastructure, lambda, middleware).',
-      severity: 'error',
+      name: 'common-utilities-usage',
+      comment: 'Common utilities should be used appropriately across layers',
+      severity: 'info',
+      from: {},
+      to: {
+        path: '^src/common',
+        pathNot: '^src/common/(errors|helpers|types)'
+      }
+    }
+  ],
+
+  // === ALLOWED PATTERNS ===
+  allowed: [
+    {
+      name: 'domain-to-ports',
+      comment: 'Domain services can depend on port interfaces',
       from: {
         path: '^src/domain'
       },
       to: {
-        path: '^(src/app|src/infra|src/middleware)'
+        path: '^src/ports'
       }
     },
+
     {
-      name: 'app-no-deps',
-      comment:
-        'The application layer should only depend on the domain layer, no dependencies from infrastructure, lambda, or middleware are allowed.',
-      severity: 'error',
+      name: 'adapters-to-ports',
+      comment: 'Adapters implement port interfaces',
       from: {
-        path: '^src/app'
+        path: '^src/adapters'
       },
       to: {
-        path: '^(src/infra|src/middleware)',
-        dependencyTypesNot: ['type-only']
+        path: '^src/ports'
       }
     },
+
     {
-      name: 'infra-deps',
-      comment:
-        'The infrastructure layer should only depend on the domain, configuration, and external libraries (node_modules), including Node.js core modules.',
-      severity: 'error',
-      from: {
-        path: '^src/infra'
-      },
+      name: 'common-dependencies',
+      comment: 'All layers can use common utilities, errors, and types',
+      from: {},
       to: {
-        pathNot: '^(src/infra|src/domain|src/config|node_modules)',
-        dependencyTypesNot: ['core']
-      }
-    },
-    {
-      name: 'middleware-deps',
-      comment:
-        'The middleware layer can only depend on the domain, infrastructure, configuration, and external libraries (node_modules).',
-      severity: 'error',
-      from: {
-        path: '^src/middleware'
-      },
-      to: {
-        pathNot: '^(src/domain|src/infra|src/config|node_modules)'
-      }
-    },
-    {
-      name: 'config-no-deps',
-      comment: 'The configuration layer should not depend on any other layers.',
-      severity: 'error',
-      from: {
-        path: '^src/config'
-      },
-      to: {
-        pathNot: '^(src/config|node_modules)'
+        path: '^src/common/(errors|helpers|types)'
       }
     }
   ]
