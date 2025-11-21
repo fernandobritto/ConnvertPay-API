@@ -39,12 +39,11 @@ scrape_configs:
       - target_label: __address__
         replacement: postgres-exporter:9187
 
-  # Job to collect metrics from NestJS application (for future implementation)
+  # Job to collect metrics from NestJS application
   - job_name: 'connvertpay-api'
     static_configs:
       - targets: ['host.docker.internal:4001']
-    scrape_interval: 30s
+    scrape_interval: 15s
     metrics_path: '/metrics'
     scrape_timeout: 10s
-    # Temporarily disabled until we implement metrics endpoint in API
-    # honor_labels: true
+    honor_labels: true
