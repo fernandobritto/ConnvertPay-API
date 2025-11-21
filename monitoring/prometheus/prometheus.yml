@@ -1,0 +1,50 @@
+# Prometheus configuration for ConnvertPay API
+# Global Prometheus configuration
+global:
+  scrape_interval: 15s # Global interval for metrics collection
+  evaluation_interval: 15s # Interval for rule evaluation
+
+  # External labels to identify this Prometheus instance
+  external_labels:
+    monitor: 'connvertpay-monitor'
+    environment: 'development'
+
+# Alert configuration (optional for future implementation)
+rule_files:
+  # - "alerts/*.yml"
+
+# Target configuration for metrics collection
+scrape_configs:
+  # Job to monitor Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+
+  # Job to monitor PostgreSQL metrics via postgres-exporter
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+    scrape_timeout: 10s
+
+    # Additional labels to identify metrics source
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: postgres-exporter:9187
+
+  # Job to collect metrics from NestJS application (for future implementation)
+  - job_name: 'connvertpay-api'
+    static_configs:
+      - targets: ['host.docker.internal:4001']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+    scrape_timeout: 10s
+    # Temporarily disabled until we implement metrics endpoint in API
+    # honor_labels: true
