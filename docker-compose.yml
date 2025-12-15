@@ -1,12 +1,96 @@
 name: 'connvertpay'
+
 services:
+  # Banco de dados PostgreSQL
   postgres:
+    container_name: connvertpay-postgres
     image: postgres:16.3-alpine
+    restart: unless-stopped
     volumes:
-      - ./data/pg:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=connvertpay-db
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
+      - POSTGRES_INITDB_ARGS=-E UTF8
     ports:
-      - 5432:5432
+      - "5432:5432"
+    networks:
+      - connvertpay-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d connvertpay-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Cache Redis
+  redis:
+    container_name: connvertpay-redis
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass root --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - connvertpay-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # API NestJS
+  api:
+    container_name: connvertpay-api
+    build:
+      context: .
+      dockerfile: dockerfile
+    restart: unless-stopped
+    ports:
+      - "4001:4001"
+    environment:
+      - DATABASE_ENVIRONMENT=development
+      - DATABASE_HOST=postgres
+      - DATABASE_USERNAME=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=connvertpay-db
+      - PORT=4001
+      - CACHE_URL=redis://:root@redis:6379
+    networks:
+      - connvertpay-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4001/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Redes customizadas para isolamento e comunicação entre serviços
+networks:
+  connvertpay-network:
+    name: connvertpay-network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1
+
+# Volumes nomeados para persistência de dados
+volumes:
+  postgres_data:
+    name: connvertpay-postgres-data
+    driver: local
+  redis_data:
+    name: connvertpay-redis-data
+    driver: local

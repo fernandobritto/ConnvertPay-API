@@ -23,7 +23,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('ConnvertPay API Documentation')
     .setDescription('ConnvertPay API Documentation for developers')
-    .setVersion('0.1.0')
+    .setVersion('1.0.0')
     .addBearerAuth()
     .build()
 
