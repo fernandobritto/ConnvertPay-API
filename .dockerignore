@@ -1,0 +1,59 @@
+# Dependências
+node_modules/
+npm-debug.log
+pnpm-debug.log
+yarn-error.log
+
+# Arquivos de build
+dist/
+build/
+*.tsbuildinfo
+
+# Testes
+coverage/
+test/
+*.test.ts
+*.spec.ts
+jest.config.ts
+
+# Arquivos de configuração do ambiente
+.env
+.env.*
+!.env-example
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker
+dockerfile
+docker-compose.yml
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Dados locais
+data/
+
+# Documentação
+README.md
+CHANGELOG.md
+LICENSE
+
+# Outros
+.prettierrc
+.eslintrc.js
+.editorconfig
+dependency-cruiser.js
+

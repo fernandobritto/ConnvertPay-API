@@ -1,29 +1,61 @@
-FROM node:22.14.0-slim AS app
+# Etapa 1: Build da aplicação
+FROM node:22.14.0-alpine AS builder
 
-# Variáveis de build
-#ARG JWT_PRIVATE_KEY
-#ARG JWT_PUBLIC_KEY
-# ARG JWT_EXPIRES_IN
+# Instala dependências necessárias para compilação
+RUN apk add --no-cache python3 make g++ wget
 
-# Passa as variáveis de build como variáveis de ambiente
-#ENV JWT_PRIVATE_KEY=$JWT_PRIVATE_KEY
-#ENV JWT_PUBLIC_KEY=$JWT_PUBLIC_KEY
-# ENV JWT_EXPIRES_IN=$JWT_EXPIRES_IN
-
-# Cria um diretório de trabalho
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Instala as dependências do package.json para acelerar o build
-COPY package*.json ./
+# Instala pnpm globalmente
+RUN npm install -g pnpm
+
+# Copia os arquivos de dependências
+COPY package.json pnpm-lock.yaml ./
 
 # Instala as dependências
-RUN yarn install
+RUN pnpm install --frozen-lockfile
 
-# Copia os arquivos do projeto para o container
+# Copia o código fonte
 COPY . .
 
-# Expõe a porta em que a aplicação será executada
+# Compila a aplicação TypeScript
+RUN pnpm build
+
+# Remove dependências de desenvolvimento
+RUN pnpm prune --prod
+
+# Etapa 2: Imagem de produção
+FROM node:22.14.0-alpine AS production
+
+# Instala wget para health checks
+RUN apk add --no-cache wget
+
+# Cria usuário não-root para segurança
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Define o diretório de trabalho
+WORKDIR /app
+
+# Instala pnpm globalmente
+RUN npm install -g pnpm
+
+# Copia dependências de produção do builder
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nodejs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=nodejs:nodejs /app/pnpm-lock.yaml ./pnpm-lock.yaml
+
+# Muda para o usuário não-root
+USER nodejs
+
+# Expõe a porta da aplicação
 EXPOSE 4001
 
-# Comando para rodar a aplicação
-CMD yarn migration:run && node dist/src/main
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:4001/api/health || exit 1
+
+# Comando para iniciar a aplicação
+CMD ["node", "dist/src/main"]
