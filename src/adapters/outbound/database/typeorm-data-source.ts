@@ -10,8 +10,8 @@ if (process.env.DATABASE_ENVIRONMENT === 'development') {
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
     synchronize: false,
-    entities: ['src/domain/infra/entities/*.entity{.ts,.js}'],
-    migrations: ['src/infra/database/migrations/*{.ts,.js}']
+    entities: ['src/domain/entities/*.entity{.ts,.js}'],
+    migrations: ['src/adapters/outbound/database/migrations/*{.ts,.js}']
   }
 } else {
   datasouce = {
@@ -23,8 +23,8 @@ if (process.env.DATABASE_ENVIRONMENT === 'development') {
     database: process.env.DATABASE_NAME,
     logging: true,
     synchronize: false,
-    entities: ['src/domain/infra/entities/*.entity{.ts,.js}'],
-    migrations: ['src/infra/database/migrations/*{.ts,.js}'],
+    entities: ['src/domain/entities/*.entity{.ts,.js}'],
+    migrations: ['src/adapters/outbound/database/migrations/*{.ts,.js}'],
     ssl: { rejectUnauthorized: false }
   }
 }

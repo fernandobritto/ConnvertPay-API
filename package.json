@@ -28,7 +28,12 @@
     "seed:config": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js -d src/adapters/outbound/database/typeorm-data-source.ts config ",
     "seed:run": "ts-node -r tsconfig-paths/register src/adapters/outbound/database/seeding/run-seed.ts",
     "schema:drop": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:drop -d src/adapters/outbound/database/typeorm-data-source.ts",
-    "schema:sync": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:sync -d src/adapters/outbound/database/typeorm-data-source.ts"
+    "schema:sync": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:sync -d src/infra/database/typeorm-data-source.ts",
+    "arch:validate": "dependency-cruiser src --validate dependency-cruiser.js",
+    "arch:graph": "dependency-cruiser src --output-type dot | dot -T svg > architecture-graph.svg",
+    "arch:report": "dependency-cruiser src --output-type html --validate dependency-cruiser.js --output-to architecture-report.html",
+    "arch:check": "pnpm arch:validate && echo '✅ Architecture validation passed!'",
+    "arch:full": "pnpm arch:validate && pnpm arch:graph && pnpm arch:report"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -50,6 +55,7 @@
     "ms": "^2.1.3",
     "pg": "^8.13.1",
     "pg-mem": "^3.0.4",
+    "prom-client": "^15.1.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.20",
@@ -74,6 +80,7 @@
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
+    "dependency-cruiser": "^16.0.0",
     "dotenv": "^17.2.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.0.1",

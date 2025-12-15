@@ -4,6 +4,11 @@
 /build
 /data
 
+# Monitoring data (volumes)
+/monitoring/data
+/monitoring/postgres-data
+/monitoring/prometheus-data
+
 # Logs
 logs
 *.log
