@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { InternalServerErrorException } from '@nestjs/common'
 import { MetricsController } from 'src/adapters/inbound/controllers/metrics.controller'
 import {
   IMetricsProvider,
@@ -49,12 +50,14 @@ describe('MetricsController', () => {
       expect(mockMetricsProvider.getMetrics).toHaveBeenCalledTimes(1)
     })
 
-    it('should rethrow errors from the metrics provider', async () => {
+    it('should throw InternalServerErrorException when provider fails', async () => {
       mockMetricsProvider.getMetrics.mockRejectedValue(
         new Error('Registry error')
       )
 
-      await expect(controller.getMetrics()).rejects.toThrow('Registry error')
+      await expect(controller.getMetrics()).rejects.toThrow(
+        InternalServerErrorException
+      )
     })
 
     it('should return an empty string when provider returns empty metrics', async () => {

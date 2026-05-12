@@ -279,6 +279,14 @@ export class PrometheusMetricsProvider implements IMetricsProvider {
 
   resetMetrics(): void {
     try {
+      // Remove custom metrics from the registry before clearing the maps to
+      // prevent "metric already registered" errors on subsequent increments.
+      for (const name of this.customCounters.keys()) {
+        this.registry.removeSingleMetric(`custom_${name}_total`)
+      }
+      for (const name of this.customGauges.keys()) {
+        this.registry.removeSingleMetric(`custom_${name}`)
+      }
       this.registry.resetMetrics()
       this.customCounters.clear()
       this.customGauges.clear()
