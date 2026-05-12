@@ -1,0 +1,7 @@
+export const hash = jest.fn()
+export const compare = jest.fn()
+export const genSalt = jest.fn()
+export const genSaltSync = jest.fn()
+export const hashSync = jest.fn()
+export const compareSync = jest.fn()
+export const getRounds = jest.fn()

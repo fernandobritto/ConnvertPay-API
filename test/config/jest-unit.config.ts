@@ -7,7 +7,8 @@ const jestConfig: JestConfigWithTsJest = {
     '^.+\\.(t|j)s$': 'ts-jest'
   },
   moduleNameMapper: {
-    '^src/(.*)$': '<rootDir>/src/$1'
+    '^src/(.*)$': '<rootDir>/src/$1',
+    '^bcrypt$': '<rootDir>/test/__mocks__/bcrypt.ts'
   },
   testTimeout: 60000,
   rootDir: '../../',
@@ -39,6 +40,7 @@ const jestConfig: JestConfigWithTsJest = {
   ],
   globals: {
     'ts-jest': {
+      tsconfig: './tsconfig.test.json',
       isolatedModules: true
     }
   }

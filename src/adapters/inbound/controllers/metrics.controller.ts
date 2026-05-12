@@ -1,4 +1,11 @@
-import { Controller, Get, Header, Inject, Logger } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Header,
+  Inject,
+  InternalServerErrorException,
+  Logger
+} from '@nestjs/common'
 import { ApiExcludeController } from '@nestjs/swagger'
 import {
   IMetricsProvider,
@@ -13,7 +20,7 @@ export class MetricsController {
   constructor(
     @Inject(METRICS_PROVIDER)
     private readonly metricsProvider: IMetricsProvider
-  ) {}
+  ) { }
 
   @Get('metrics')
   @Header('Cache-Control', 'no-cache, no-store, must-revalidate')
@@ -32,7 +39,7 @@ export class MetricsController {
       return response
     } catch (error) {
       this.logger.error(`Error retrieving metrics: ${error}`)
-      throw error
+      throw new InternalServerErrorException('Failed to retrieve metrics')
     }
   }
 
